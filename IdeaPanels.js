@@ -1,0 +1,1 @@
+export default function Gallery(){return <div className="page simple-page"><h1>Galerie</h1><p className="lead">Fotografie z výroby ode mě i od zákazníků.</p><div className="gallery">{Array.from({length:9}).map((_,i)=><div key={i}>Fotografie {i+1}<small>Nahrávání fotografií doplníme po připojení databáze.</small></div>)}</div></div>}
