@@ -1,4 +1,10 @@
-node_modules
-.next
-.vercel
-.env*
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  }
+}
