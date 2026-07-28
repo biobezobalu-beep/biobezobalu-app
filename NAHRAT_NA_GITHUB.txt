@@ -1,0 +1,3 @@
+TENTO ZIP NEJDŘÍVE ROZBALTE.
+Na GitHub nahrajte soubory a složky, které jsou uvnitř rozbalené složky.
+Nenahrávejte samotný ZIP ani nadřazenou složku biobezobalu-club-fixed.
