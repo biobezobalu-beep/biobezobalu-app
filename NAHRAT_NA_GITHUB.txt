@@ -1,5 +1,7 @@
+BIOBEZOBALU CLUB V3 – DOKONČENÍ OBJEDNÁVKY
+
 1. Tento ZIP nejdřív rozbalte.
-2. Na GitHub nahrajte VŠECHEN OBSAH rozbalené složky, ne samotný ZIP a ne nadřazenou složku.
-3. V kořeni repozitáře musí být přímo: app, components, data, public, package.json atd.
-4. GitHub se zeptá na přepsání souborů – potvrďte nahrání a udělejte Commit changes.
-5. Vercel potom automaticky spustí nový deployment.
+2. Na GitHub nahrajte obsah rozbalené složky, nikoliv samotný ZIP.
+3. Nahrajte všechny položky včetně složek app, components, data, public a souboru package.json.
+4. GitHub přepíše stejnojmenné soubory; není nutné předem mazat funkční složky.
+5. Commit message může být například: Uprava procesu rezervace.

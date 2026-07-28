@@ -100,15 +100,16 @@ export default function ClubApp() {
       value: retail,
       code: voucherCode(retail),
       delivery,
-      status: 'Rezervace potvrzena',
+      status: delivery === 'now'
+        ? 'Rezervace zaplacena – dokončete objednávku na e-shopu'
+        : 'Rezervace zaplacena – objednávku dokončíte později',
       cancelled: false
     };
     const next = [item, ...reservations];
     setReservations(next);
     localStorage.setItem('bb-reservations', JSON.stringify(next));
-    setReserveOpen(false);
-    setView('account');
     showToast('Rezervace byla úspěšně vytvořena.');
+    return item;
   }
 
   function cancelReservation(id) {
@@ -202,6 +203,11 @@ export default function ClubApp() {
           presale={presale}
           onClose={() => setReserveOpen(false)}
           finish={finishReserve}
+          onDone={() => {
+            setReserveOpen(false);
+            setView('account');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
         />
       )}
       {toast && <div className="toast" role="status">✓ {toast}</div>}
@@ -274,7 +280,7 @@ function Home({ choose, go }) {
           <Step n="01" t="Vyberete čokoládu" x="Zvolíte příchuť a balení 250 g, 1 kg nebo 3 × 1 kg." />
           <Step n="02" t="Zaplatíte o 15 % méně" x="Za 250 g zaplatíte 255 Kč místo 300 Kč, za 1 kg 850 Kč místo 1 000 Kč." />
           <Step n="03" t="Sledujete výrobu" x="V účtu vidíte rezervaci, voucher i postup přípravy vaší várky." />
-          <Step n="04" t="Vyberete doručení" x="Pošleme ji hned, nebo ji přidáte k větší objednávce přes e-shop." />
+          <Step n="04" t="Objednávku dokončíte teď nebo později" x="Po zaplacení dostanete voucher. Můžete hned na e-shopu vybrat dopravu a další produkty, nebo vše dokončit až po výrobě." />
         </div>
         <div className="how-note">
           <b>Rezervace bez rizika.</b>
@@ -303,7 +309,7 @@ function Home({ choose, go }) {
         <div>
           <span className="eyebrow light-text">VOUCHER PO REZERVACI</span>
           <h2>Rezervace vám neubere výhody z e-shopu.</h2>
-          <p>Čokoládu po výrobě vložíte do košíku za běžnou cenu a uplatníte voucher v její plné hodnotě. Produkt se tak může započítat do dopravy zdarma i objemových slev.</p>
+          <p>Voucher v plné hodnotě produktu dostanete hned po zaplacení rezervace. Můžete s ním okamžitě dokončit objednávku na e-shopu, vybrat dopravu a přidat další zboží, nebo si ho ponechat na později.</p>
         </div>
         <div className="voucher-card">
           <small>UKÁZKOVÁ REZERVACE</small>
@@ -506,7 +512,7 @@ function Detail({ product, size, setSize, retail, presale, startReserve, go }) {
       </div>
       <section className="detail-info">
         <article><span>CHUŤOVÝ PROFIL</span><h2>Co můžete čekat</h2><p>{product.taste}</p></article>
-        <article><span>PO VÝROBĚ</span><h2>Vyberete si způsob doručení</h2><p>Necháte si čokoládu ihned poslat, nebo si ji přidáte k větší objednávce na BioBezObalu.cz pomocí voucheru v plné hodnotě produktu.</p></article>
+        <article><span>DOKONČENÍ OBJEDNÁVKY</span><h2>Teď, nebo až po výrobě</h2><p>Po zaplacení rezervace dostanete voucher v plné hodnotě čokolády. Objednávku můžete hned dokončit na BioBezObalu.cz, zvolit dopravu a přidat další produkty, nebo vše vyřídit až později.</p></article>
       </section>
     </main>
   );
@@ -548,7 +554,7 @@ function Account({ user, reservations, setAuthOpen, logout, cancelReservation, s
                 <div>
                   <span className="status-dot">●</span><small>{reservation.status}</small>
                   <h3>{reservation.product}</h3>
-                  <p>{reservation.size} • {reservation.delivery === 'now' ? 'Poslat ihned po výrobě' : 'Přidat k další objednávce'}</p>
+                  <p>{reservation.size} • {reservation.delivery === 'now' ? 'Objednávku dokončit na e-shopu hned' : 'Objednávku dokončit až po výrobě'}</p>
                 </div>
                 <div className="res-price"><b>{money(reservation.paid)}</b><small>zaplaceno</small></div>
               </div>
@@ -563,6 +569,9 @@ function Account({ user, reservations, setAuthOpen, logout, cancelReservation, s
                 </div>
                 <div className="voucher-actions">
                   <button disabled={reservation.cancelled} onClick={() => copyCode(reservation.code)}>Kopírovat kód</button>
+                  {!reservation.cancelled && reservation.delivery === 'now' && (
+                    <a href="https://biobezobalu.cz" target="_blank" rel="noreferrer">Dokončit na e-shopu ↗</a>
+                  )}
                   {!reservation.cancelled && <button className="danger-link" onClick={() => cancelReservation(reservation.id)}>Zrušit rezervaci</button>}
                 </div>
               </div>
@@ -613,34 +622,56 @@ function AuthModal({ onClose, onLogin }) {
   );
 }
 
-function ReserveModal({ product, size, retail, presale, onClose, finish }) {
-  const [delivery, setDelivery] = useState('later');
+function ReserveModal({ product, size, retail, presale, onClose, finish, onDone }) {
+  const [delivery, setDelivery] = useState('now');
   const [step, setStep] = useState(1);
+  const [createdReservation, setCreatedReservation] = useState(null);
+  const [codeCopied, setCodeCopied] = useState(false);
+
+  function payReservation() {
+    const created = finish(delivery);
+    setCreatedReservation(created);
+    setStep(3);
+  }
+
+  async function copyCreatedCode() {
+    if (!createdReservation) return;
+    try {
+      await navigator.clipboard.writeText(createdReservation.code);
+      setCodeCopied(true);
+    } catch {
+      setCodeCopied(true);
+    }
+  }
 
   return (
     <div className="overlay">
       <div className="modal reserve">
         <button className="x" onClick={onClose}>×</button>
-        {step === 1 ? (
+        {step === 1 && (
           <>
-            <span>KROK 1 ZE 2</span>
-            <h2>Jak chcete čokoládu převzít?</h2>
+            <span>KROK 1 ZE 3</span>
+            <h2>Kdy chcete dokončit objednávku na e-shopu?</h2>
+            <p>V obou případech teď zaplatíte rezervovanou čokoládu se slevou 15 % a hned dostanete voucher v její plné běžné hodnotě.</p>
             <div className="delivery-options">
               <button className={delivery === 'now' ? 'selected' : ''} onClick={() => setDelivery('now')}>
-                <b>📦 Poslat ihned po výrobě</b>
-                <small>Po dokončení vás vyzveme k doplacení dopravy, pokud nebude zdarma.</small>
+                <b>📦 Dokončit objednávku na e-shopu hned</b>
+                <small>Po zaplacení rezervace otevřete BioBezObalu.cz, vložíte čokoládu do košíku a použijete voucher. Vyberete dopravu a platbu a můžete přidat další produkty. Celou objednávku odešleme ihned po výrobě rezervované čokolády.</small>
+                <em>Pokud kampaň nedosáhne cíle, neprodleně vás informujeme.</em>
               </button>
               <button className={delivery === 'later' ? 'selected' : ''} onClick={() => setDelivery('later')}>
-                <b>🛒 Přidat k větší objednávce</b>
-                <small>V účtu uvidíte voucher v plné hodnotě produktu pro použití na e-shopu.</small>
+                <b>🕒 Dokončit objednávku až po výrobě</b>
+                <small>Teď zaplatíte pouze rezervovanou čokoládu. Voucher zůstane ve vašem účtu a dopravu, případné další produkty i platbu na e-shopu vyřešíte až potom.</small>
               </button>
             </div>
-            <button className="primary wide" onClick={() => setStep(2)}>Pokračovat k platbě</button>
+            <button className="primary wide" onClick={() => setStep(2)}>Pokračovat k platbě rezervace</button>
           </>
-        ) : (
+        )}
+
+        {step === 2 && (
           <>
-            <span>KROK 2 ZE 2</span>
-            <h2>Souhrn rezervace</h2>
+            <span>KROK 2 ZE 3</span>
+            <h2>Zaplatit rezervovanou čokoládu</h2>
             <div className="order-line"><div><b>{product.name}</b><small>{size.label}</small></div><b>{money(presale)}</b></div>
             <div className="payment">
               <label>Číslo karty<input defaultValue="4242 4242 4242 4242" /></label>
@@ -649,11 +680,48 @@ function ReserveModal({ product, size, retail, presale, onClose, finish }) {
             <div className="modal-summary">
               <span>Běžná hodnota produktu <b>{money(retail)}</b></span>
               <span>Sleva předprodeje <b>− {money(retail - presale)}</b></span>
-              <strong>K úhradě <b>{money(presale)}</b></strong>
-              <span>Budoucí voucher <b>{voucherCode(retail)}</b></span>
+              <strong>K úhradě nyní <b>{money(presale)}</b></strong>
+              <span>Voucher po zaplacení <b>{voucherCode(retail)}</b></span>
+              <span>Dokončení e-shopové objednávky <b>{delivery === 'now' ? 'hned' : 'později'}</b></span>
             </div>
-            <button className="primary wide" onClick={() => finish(delivery)}>Demonstračně zaplatit a rezervovat</button>
+            <button className="primary wide" onClick={payReservation}>Demonstračně zaplatit {money(presale)}</button>
+            <button className="back-step" onClick={() => setStep(1)}>← Změnit způsob dokončení objednávky</button>
             <small className="demo">Demonstrační platba – nic se skutečně nestrhne.</small>
+          </>
+        )}
+
+        {step === 3 && createdReservation && (
+          <>
+            <span>KROK 3 ZE 3</span>
+            <h2>{delivery === 'now' ? 'Rezervace je zaplacena. Dokončete objednávku na e-shopu.' : 'Rezervace je zaplacena. Voucher na vás počká.'}</h2>
+            <div className="checkout-success">
+              <small>VÁŠ VOUCHER V PLNÉ HODNOTĚ PRODUKTU</small>
+              <strong>{createdReservation.code}</strong>
+              <span>Hodnota {money(createdReservation.value)}</span>
+              <button type="button" onClick={copyCreatedCode}>{codeCopied ? '✓ Kód připraven ke vložení' : 'Kopírovat kód'}</button>
+            </div>
+
+            {delivery === 'now' ? (
+              <div className="checkout-instructions">
+                <h3>Co udělat na e-shopu</h3>
+                <ol>
+                  <li>Vložte rezervovanou čokoládu do košíku za běžnou cenu.</li>
+                  <li>Zadejte voucher <b>{createdReservation.code}</b>.</li>
+                  <li>Vyberte dopravu a způsob platby.</li>
+                  <li>Případně přidejte další produkty. Objednávku odešleme, jakmile čokoládu vyrobíme.</li>
+                </ol>
+                <a className="primary wide checkout-link" href="https://biobezobalu.cz" target="_blank" rel="noreferrer">Otevřít BioBezObalu.cz a dokončit objednávku ↗</a>
+                <p className="campaign-warning">Pokud kampaň nedosáhne cíle, neprodleně vás informujeme.</p>
+              </div>
+            ) : (
+              <div className="checkout-instructions">
+                <h3>Teď už nemusíte nic dalšího platit</h3>
+                <p>Voucher je uložený ve vašem účtu. Až bude čokoláda vyrobená, dokončíte na e-shopu dopravu, případné další produkty a zvolený způsob platby.</p>
+              </div>
+            )}
+
+            <button className="ghost wide" type="button" onClick={onDone}>Přejít do mých rezervací</button>
+            <small className="demo">V prototypu není voucher ani košík skutečně propojený se Shoptetem.</small>
           </>
         )}
       </div>

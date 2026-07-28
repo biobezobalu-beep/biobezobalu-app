@@ -242,7 +242,7 @@ main { max-width: 1320px; margin: auto; }
 .voucher-row small, .voucher-row strong, .voucher-row span { display: block; }
 .voucher-row strong { margin: 5px 0; }
 .voucher-actions { display: flex; gap: 9px; align-items: center; }
-.voucher-actions button { border: 1px solid var(--green); background: #fff; color: var(--green); padding: 9px 13px; border-radius: 9px; }
+.voucher-actions button, .voucher-actions a { border: 1px solid var(--green); background: #fff; color: var(--green); padding: 9px 13px; border-radius: 9px; text-decoration: none; text-align: center; font: inherit; }
 .voucher-actions .danger-link { border-color: #dcbaba; color: var(--danger); }
 .empty, .empty-card { text-align: center; padding: 110px 5vw; }
 .empty-card { border: 1px dashed var(--line); margin-top: 35px; border-radius: 16px; }
@@ -270,6 +270,7 @@ main { max-width: 1320px; margin: auto; }
 .delivery-options button.selected { border: 2px solid var(--green); background: var(--mint); }
 .delivery-options b, .delivery-options small { display: block; }
 .delivery-options small { color: var(--muted); margin-top: 6px; line-height: 1.5; }
+.delivery-options em { display: block; margin-top: 9px; color: var(--green); font-size: 12px; font-style: normal; font-weight: 700; }
 .order-line { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--line); }
 .order-line small { display: block; color: var(--muted); }
 .payment > div { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -342,3 +343,16 @@ footer button, footer a { color: #dbe4dd; }
   .modal { padding: 24px; }
   .how-note { text-align: left; }
 }
+
+.back-step { width: 100%; margin-top: 10px; border: 0; background: transparent; color: var(--green); padding: 9px; cursor: pointer; }
+.checkout-success { margin: 18px 0; border: 1px solid var(--line); background: var(--cream); border-radius: 12px; padding: 18px; text-align: center; }
+.checkout-success small, .checkout-success strong, .checkout-success span { display: block; }
+.checkout-success strong { margin: 8px 0 4px; font-size: 24px; letter-spacing: .04em; color: var(--green); }
+.checkout-success span { color: var(--muted); }
+.checkout-success button { margin-top: 13px; border: 1px solid var(--green); background: #fff; color: var(--green); border-radius: 9px; padding: 10px 14px; }
+.checkout-instructions { margin: 18px 0; }
+.checkout-instructions h3 { margin-bottom: 8px; }
+.checkout-instructions ol { padding-left: 21px; color: var(--muted); line-height: 1.55; }
+.checkout-instructions li + li { margin-top: 5px; }
+.checkout-link { display: block; text-align: center; text-decoration: none; margin-top: 15px; box-sizing: border-box; }
+.campaign-warning { margin: 12px 0 0; padding: 11px 13px; border-radius: 9px; background: var(--mint); color: var(--green); font-size: 13px; }
