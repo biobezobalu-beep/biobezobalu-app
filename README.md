@@ -1,20 +1,17 @@
 # BioBezObalu Chocolate Club
 
-Interaktivní prototyp předprodejní aplikace:
+Interaktivní demonstrační Next.js aplikace pro předprodej limitovaných vegan čokolád.
 
-- aktivní kampaně limitovaných vegan čokolád,
-- předprodejní sleva 15 %,
-- výběr 250 g / 1 kg / 3 × 1 kg,
-- demonstrační registrace, přihlášení a platba,
-- volba odeslání po výrobě nebo přidání k větší objednávce,
-- účet s rezervacemi a voucherem,
-- lokální ukládání prototypových dat v prohlížeči.
+## Co umí
 
-Platby, databáze ani Shoptet zatím nejsou skutečně připojené.
+- 9 předprodejních kampaní s menšími barevnými vizuály čokolád
+- pevné běžné ceny 300 Kč / 250 g, 1 000 Kč / 1 kg a 3 000 Kč / 3 × 1 kg
+- předprodejní sleva 15 %
+- přihlášení a registraci v demonstračním režimu
+- dvoukrokovou simulaci rezervace a platby
+- volbu doručení po výrobě
+- účet s rezervacemi, vouchery a možností zrušení
+- formulář pro návrh nové čokolády
+- nezávazné hlasování o příchutích
 
-## Lokální spuštění
-
-```bash
-npm install
-npm run dev
-```
+Data prototypu se ukládají pouze do localStorage daného prohlížeče. Skutečná platba, databáze ani Shoptet zatím nejsou napojené.

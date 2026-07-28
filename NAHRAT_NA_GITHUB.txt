@@ -1,3 +1,5 @@
-TENTO ZIP NEJDŘÍVE ROZBALTE.
-Na GitHub nahrajte soubory a složky, které jsou uvnitř rozbalené složky.
-Nenahrávejte samotný ZIP ani nadřazenou složku biobezobalu-club-fixed.
+1. Tento ZIP nejdřív rozbalte.
+2. Na GitHub nahrajte VŠECHEN OBSAH rozbalené složky, ne samotný ZIP a ne nadřazenou složku.
+3. V kořeni repozitáře musí být přímo: app, components, data, public, package.json atd.
+4. GitHub se zeptá na přepsání souborů – potvrďte nahrání a udělejte Commit changes.
+5. Vercel potom automaticky spustí nový deployment.
